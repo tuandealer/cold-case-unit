@@ -1,0 +1,25 @@
+--- a/Lib/email/_parseaddr.py
++++ b/Lib/email/_parseaddr.py
+@@ -339,6 +339,7 @@
+             return
+ 
+         expectroute = False
++        inroute = False
+         self.pos += 1
+         self.gotonext()
+         adlist = ''
+@@ -352,8 +353,14 @@
+             elif self.field[self.pos] == '@':
+                 self.pos += 1
+                 expectroute = True
++                inroute = True
+             elif self.field[self.pos] == ':':
+                 self.pos += 1
++                inroute = False
++            elif self.field[self.pos] == ',' and inroute:
++                # RFC 2822 obs-route: commas separate the hops of a
++                # source route, e.g. <@hop1.org,@hop2.net:user@example.org>.
++                self.pos += 1
+             else:
+                 adlist = self.getaddrspec()
+                 self.pos += 1
